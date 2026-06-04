@@ -15,6 +15,10 @@ GROQ_MODEL = "whisper-large-v3"
 OPENAI_URL = "https://api.openai.com/v1/audio/transcriptions"
 OPENAI_MODEL = "whisper-1"
 
+# Cloudflare (in front of api.groq.com) rejects the default "Python-urllib/x.y"
+# User-Agent with HTTP 403 error 1010. Send an explicit client UA instead.
+USER_AGENT = "claude-watch/0.1 (+https://github.com/devinilabs/claude-watch)"
+
 
 class WhisperError(Exception):
     pass
@@ -86,6 +90,7 @@ def _post(url: str, audio: Path, *, model: str, api_key: str) -> list[dict]:
             "Authorization": f"Bearer {api_key}",
             "Content-Type": f"multipart/form-data; boundary={boundary}",
             "Content-Length": str(len(body)),
+            "User-Agent": USER_AGENT,
         },
     )
     try:
